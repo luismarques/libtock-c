@@ -236,11 +236,15 @@ void _start(void* app_start __attribute__((unused)),
     "mv  a1, t1\n"              // a1 = app_brk
     "ecall\n"                   // memop
 
+    // Set gp, the ePIC base register. The ePIC code uses this as a reference
+    // point to enable the RAM section of the app to be at any address.
+    "mv   gp, s2\n"             // gp = mem_start
+
     // Call into the rest of startup. This should never return.
     "mv   a0, s0\n"             // first arg is app_start
     "mv   s0, sp\n"             // Set the frame pointer to sp.
     "mv   a1, s2\n"             // second arg is mem_start
-    "jal  _c_start_nopic\n"
+    "jal  _c_start_pic\n"
     );
 
 #else
@@ -308,7 +312,7 @@ void _c_start_pic(uint32_t app_start, uint32_t mem_start) {
   // length field is followed by that many entries. We iterate each entry and
   // correct addresses.
   struct reldata* rd = (struct reldata*)(myhdr->reldata_start + (uint32_t)app_start);
-  for (uint32_t i = 0; i < (rd->len / (int)sizeof(uint32_t)); i += 2) {
+  for (uint32_t i = 0; i < (rd->len / (int)sizeof(uint32_t)); i += 3) {
     // The entries are offsets from the beginning of the app's memory region.
     // First, we get a pointer to the location of the address we need to fix.
     uint32_t* target = (uint32_t*)(rd->data[i] + mem_start);
