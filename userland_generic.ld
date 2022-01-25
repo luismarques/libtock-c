@@ -102,7 +102,7 @@ SECTIONS {
      * platforms (like Cortex-M), but is needed when an app is compiled for a
      * fixed address.
      */
-    .stack :
+    .stack (NOLOAD) :
     {
         /* elf2tab requires that the `_SRAM_ORIGIN` symbol be present to
 		 * mark the first address in the SRAM memory. Since ELF files do
