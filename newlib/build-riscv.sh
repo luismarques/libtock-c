@@ -2,7 +2,18 @@
 
 NEWLIB_SRC_DIR=$1
 
-$NEWLIB_SRC_DIR/configure --target=riscv64-unknown-elf \
+export CC_FOR_TARGET=riscv32-unknown-elf-clang
+export CFLAGS_FOR_TARGET=" \
+  -g -Os \
+  -fepic \
+  -fuse-ld=ld.lld \
+  --gcc-toolchain=$(dirname $(dirname $(which $CC_FOR_TARGET))) \
+  -ffunction-sections \
+  -fdata-sections \
+  -mno-relax \
+"
+
+$NEWLIB_SRC_DIR/configure --target=riscv32-unknown-elf \
   --disable-newlib-supplied-syscalls \
   --disable-nls \
   --enable-newlib-reent-small \
@@ -13,6 +24,7 @@ $NEWLIB_SRC_DIR/configure --target=riscv64-unknown-elf \
   --disable-newlib-unbuf-stream-opt \
   --enable-lite-exit \
   --enable-newlib-global-atexit \
-  --enable-newlib-nano-formatted-io
+  --enable-newlib-nano-formatted-io \
+  --disable-gdb
 
-make -j$(nproc) CFLAGS_FOR_TARGET='-g -Os -ffunction-sections -fdata-sections'
+make -j$(nproc)
