@@ -195,9 +195,6 @@ override CPPFLAGS_rv32imac += \
 override WLFLAGS_rv32imac += \
       -Wl,--no-relax   # Prevent use of global_pointer for riscv
 
-override LINK_LIBS_rv32 += \
-      -lgcc -lstdc++ -lsupc++
-
 override LINK_LIBS_rv32i    += $(LINK_LIBS_rv32)
 override LINK_LIBS_rv32imc  += $(LINK_LIBS_rv32)
 override LINK_LIBS_rv32imac += $(LINK_LIBS_rv32)
